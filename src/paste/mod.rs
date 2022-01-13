@@ -41,7 +41,7 @@ pub struct Url(String);
 
 impl std::fmt::Display for Url {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let Url(url) = self;
+        let url = self.get_url();
         write!(f, "{}", url)
     }
 }
@@ -62,11 +62,10 @@ impl Url {
         }
     }
 
-    // !Deprecated
-    // // pub fn get_url(&self) -> &String {
-    // //     let Url(url) = self;
-    // //     url
-    // // }
+    pub fn get_url(&self) -> &String {
+        let Url(url) = self;
+        url
+    }
 
     pub fn get_id(&mut self) -> String {
         let Url(url) = self;
@@ -75,7 +74,7 @@ impl Url {
     }
 
     pub async fn make_request(&self) -> Result<String, reqwest::Error> {
-        let res = reqwest::get(format!("{}", self))
+        let res = reqwest::get(self.get_url())
             .await?
             .error_for_status()?
             .text()
