@@ -1,5 +1,5 @@
 [package]
-name = "paste-rs_cli"
+name = "paste_rs-cli"
 readme = "README.md"
 description = "A simple cli tool for https://paste.rs/"
 license = "MIT"
