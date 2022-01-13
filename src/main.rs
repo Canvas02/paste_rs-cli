@@ -12,6 +12,7 @@
 // mod cache;
 
 pub mod paste;
+pub mod util;
 
 use crate::paste::Url;
 use clap::{AppSettings, Parser, Subcommand};
@@ -78,13 +79,13 @@ async fn main() {
 #[derive(Parser)]
 #[clap(name = "paste-rs")]
 #[clap(about = "a simple cli tool for https://paste.rs")]
-pub struct Cli {
+struct Cli {
     #[clap(subcommand)]
     command: Commands,
 }
 
 #[derive(Subcommand)]
-pub enum Commands {
+enum Commands {
     // Command to get a paste
     #[clap(setting(AppSettings::ArgRequiredElseHelp))]
     #[clap(about = "Get a paste")]

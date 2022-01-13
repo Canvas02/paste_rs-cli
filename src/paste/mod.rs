@@ -8,9 +8,7 @@
 #![deny(dead_code)]
 #![deny(unused_variables)]
 
-mod util;
-
-use crate::paste::util::*;
+use crate::util::*;
 use reqwest::Client;
 
 const PASTE_RS_URL: &str = "https://paste.rs/";
