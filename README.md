@@ -9,6 +9,6 @@ a simple cli tool for [paste.rs](https://paste.rs)
 
 to install:
 ```shell
-cargo install --locked paste_rs-cli
+cargo install --locked paste-rs_cli
 ```
 or install prebuilt binaries from [Release Page](https://github.com/Canvas02/paste_rs-cli/releases)
