@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: MIT
 
 // ! Used in development never turn on for a production build
-#![allow(dead_code)]
-#![allow(unused_variables)]
+// #![allow(dead_code)]
+// #![allow(unused_variables)]
 // ! enable for production build
-// #![deny(dead_code)]
-// #![deny(unused_variables)]
+#![deny(dead_code)]
+#![deny(unused_variables)]
 
 mod util;
 

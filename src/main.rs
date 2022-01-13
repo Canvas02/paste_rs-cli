@@ -2,14 +2,16 @@
 // SPDX-License-Identifier: MIT
 
 // ! Used in development never turn on for a production build
-#![allow(dead_code)]
-#![allow(unused_variables)]
+// #![allow(dead_code)]
+// #![allow(unused_variables)]
 // ! enable for production build
-// #![deny(dead_code)]
-// #![deny(unused_variables)]
+#![deny(dead_code)]
+#![deny(unused_variables)]
 
-mod cache;
-mod paste;
+// TODO: implement cache
+// mod cache;
+
+pub mod paste;
 
 use crate::paste::Url;
 use clap::{AppSettings, Parser, Subcommand};
@@ -37,8 +39,7 @@ async fn main() {
                 }
             };
 
-            // TODO: Implement cache
-            // crate::cache::new_cache()
+            // Cache work goes here
 
             println!(
                 "====\t{}\t======================================================",
