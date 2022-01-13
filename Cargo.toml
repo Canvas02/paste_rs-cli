@@ -1,6 +1,11 @@
 [package]
 name = "paste_rs-cli"
+readme = "README.md"
 description = "A simple cli tool for https://paste.rs/"
+license = "MIT"
+repository = "https://github.com/Canvas02/paste_rs-cli"
+keywords = ["cli", "paste"]
+categories = ["command-line-utilities"]
 authors = ["Canvas02 <Canvas02@protonmail.com>"]
 version = "0.1.0"
 edition = "2021"
