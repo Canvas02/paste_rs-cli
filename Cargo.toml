@@ -2,8 +2,8 @@
 name = "paste_rs-cli"
 readme = "README.md"
 description = "A simple cli tool for https://paste.rs/"
+extended-description = "A simple cli tool for https://paste.rs/"
 license = "MIT"
-license-file = "LICENSE"
 homepage = "https://github.com/Canvas02/paste_rs-cli"
 repository = "https://github.com/Canvas02/paste_rs-cli"
 keywords = ["cli", "paste"]
