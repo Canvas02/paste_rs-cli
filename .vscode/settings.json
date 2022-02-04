@@ -1,0 +1,5 @@
+{
+    "yaml.schemas": {
+        "https://json.schemastore.org/github-workflow.json": "file:///c%3A/Users/shatn/code/paste_rs-cli/.github/workflows/build.yml"
+    }
+}
