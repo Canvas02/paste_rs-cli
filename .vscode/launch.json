@@ -1,0 +1,48 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'paste_rs-cli'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=paste_rs-cli",
+                    "--package=paste_rs-cli"
+                ],
+                "filter": {
+                    "name": "paste_rs-cli",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "get",
+                "osx"
+            ],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'paste_rs-cli'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=paste_rs-cli",
+                    "--package=paste_rs-cli"
+                ],
+                "filter": {
+                    "name": "paste_rs-cli",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
