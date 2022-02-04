@@ -1,5 +1,8 @@
 {
     "yaml.schemas": {
         "https://json.schemastore.org/github-workflow.json": "file:///c%3A/Users/shatn/code/paste_rs-cli/.github/workflows/build.yml"
-    }
+    },
+    "licenser.license": "MIT",
+    "licenser.projectName": "paste_rs-cli",
+    "licenser.useSPDXLicenseFormat": true
 }
