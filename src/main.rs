@@ -3,11 +3,9 @@
 
 #![deny(unused)]
 
-#[macro_use]
-extern crate anyhow;
-
 mod api;
 mod cli;
+mod error;
 
 use crate::api::Paste;
 use crate::cli::{Cli, Commands};
@@ -15,7 +13,7 @@ use clap::Parser;
 use std::fs;
 
 #[tokio::main]
-async fn main() -> anyhow::Result<()> {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Cli::parse();
 
     match &args.command {

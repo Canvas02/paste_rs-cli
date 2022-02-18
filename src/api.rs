@@ -3,6 +3,8 @@
 
 const PASTE_RS_URL: &str = "https://paste.rs/";
 
+use crate::error::PasteError;
+
 #[derive(Debug)]
 pub struct Paste(String);
 
@@ -25,7 +27,7 @@ impl Paste {
     /// let paste = Paste::from("https://paste.rs/osx").unwrap();
     /// let paste = Paste::from("paste.rs/osx").unwrap();
     /// ```
-    pub fn from(val: &str) -> anyhow::Result<Self> {
+    pub fn from(val: &str) -> Result<Self, PasteError> {
         if is_url(val) && is_paste_rs_url(val) {
             Ok(Paste(extract_paste_id(&val.to_string())?))
         } else if !is_url(val) && is_paste_rs_url(val) {
@@ -34,9 +36,11 @@ impl Paste {
         } else if val.len() == 3 {
             Ok(Paste(val.to_string()))
         } else if is_url(val) && !is_paste_rs_url(val) {
-            bail!("Invalid URL")
+            // bail!("Invalid URL")
+            Err(PasteError::InvalidUrl)
         } else {
-            bail!("Invalid argument")
+            // bail!("Invalid argument")
+            Err(PasteError::InvalidArguments)
         }
     }
 
@@ -52,7 +56,7 @@ impl Paste {
     /// dbg!(res);
     /// ```
     ///
-    pub async fn new(data: String) -> anyhow::Result<Self> {
+    pub async fn new(data: String) -> Result<Self, Box<dyn std::error::Error>> {
         let client = reqwest::Client::new();
         let res = client
             .post(PASTE_RS_URL)
@@ -77,7 +81,7 @@ impl Paste {
     /// dbg!(paste_content);
     /// ```
     ///
-    pub async fn get(&self) -> anyhow::Result<String> {
+    pub async fn get(&self) -> Result<String, Box<dyn std::error::Error>> {
         let res = reqwest::get(self.get_url()).await?.text().await?;
         Ok(res)
     }
@@ -117,12 +121,13 @@ fn is_paste_rs_url(url: &str) -> bool {
     }
 }
 
-fn extract_paste_id(url: &String) -> anyhow::Result<String> {
+fn extract_paste_id(url: &String) -> Result<String, PasteError> {
     // let url = url.to_owned();
     // url.replace_range(0..PASTE_RS_URL.len(), "");
     if url.contains(PASTE_RS_URL) {
         Ok(url.replace(PASTE_RS_URL, ""))
     } else {
-        bail!("Url is not a Paste.rs url")
+        // bail!("Url is not a Paste.rs url")
+        Err(PasteError::InvalidUrl)
     }
 }
