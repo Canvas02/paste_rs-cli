@@ -6,8 +6,7 @@ use std::path::PathBuf;
 
 #[derive(Parser)]
 #[clap(name = "paste-rs")]
-#[clap(about = "a simple cli tool for https://paste.rs")]
-#[clap(author, version)]
+#[clap(about, author, version)]
 pub struct Cli {
     #[clap(subcommand)]
     pub command: Commands,

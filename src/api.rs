@@ -21,7 +21,10 @@ impl Paste {
     ///
     /// # Example
     /// ```
-    ///
+    /// let paste = Paste::from("osx").unwrap();
+    /// let paste = Paste::from("https://paste.rs/osx").unwrap();
+    /// let paste = Paste::from("paste.rs/osx").unwrap();
+    /// ```
     pub fn from(val: &str) -> anyhow::Result<Self> {
         if is_url(val) && is_paste_rs_url(val) {
             Ok(Paste(extract_paste_id(&val.to_string())?))
