@@ -82,11 +82,13 @@ impl Paste {
         Ok(res)
     }
 
+    /* ! Unused code
     /// Get the id of a Paste
     pub fn get_id(&self) -> String {
         let Paste(id) = self;
         id.to_owned()
     }
+    */
 
     /// Get the url of a Paste
     pub fn get_url(&self) -> String {

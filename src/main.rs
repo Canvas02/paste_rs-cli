@@ -6,7 +6,7 @@
 #[macro_use]
 extern crate anyhow;
 
-pub mod api;
+mod api;
 mod cli;
 
 use crate::api::Paste;
