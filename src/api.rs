@@ -3,7 +3,7 @@
 
 const PASTE_RS_URL: &str = "https://paste.rs/";
 
-use crate::error::PasteError;
+use crate::error::{PasteError, PasteResult};
 
 #[derive(Debug)]
 pub struct Paste(String);
@@ -27,7 +27,7 @@ impl Paste {
     /// let paste = Paste::from("https://paste.rs/osx").unwrap();
     /// let paste = Paste::from("paste.rs/osx").unwrap();
     /// ```
-    pub fn from(val: &str) -> Result<Self, PasteError> {
+    pub fn from(val: &str) -> PasteResult<Self> {
         if is_url(val) && is_paste_rs_url(val) {
             Ok(Paste(extract_paste_id(&val.to_string())?))
         } else if !is_url(val) && is_paste_rs_url(val) {
@@ -56,7 +56,7 @@ impl Paste {
     /// dbg!(res);
     /// ```
     ///
-    pub async fn new(data: String) -> Result<Self, Box<dyn std::error::Error>> {
+    pub async fn new(data: String) -> PasteResult<Self> {
         let client = reqwest::Client::new();
         let res = client
             .post(PASTE_RS_URL)
@@ -81,7 +81,7 @@ impl Paste {
     /// dbg!(paste_content);
     /// ```
     ///
-    pub async fn get(&self) -> Result<String, Box<dyn std::error::Error>> {
+    pub async fn get(&self) -> PasteResult<String> {
         let res = reqwest::get(self.get_url()).await?.text().await?;
         Ok(res)
     }
