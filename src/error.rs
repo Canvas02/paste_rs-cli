@@ -1,7 +1,7 @@
 // Copyright 2022 Canvas02 <Canvas02@protonmail.com>.
 // SPDX-License-Identifier: MIT
 
-pub type PasteResult<T> = Result<T, PasteError>;
+pub type PasteResult<T> = core::result::Result<T, PasteError>;
 
 #[derive(Debug)]
 pub enum PasteError {
@@ -16,7 +16,14 @@ impl std::convert::From<reqwest::Error> for PasteError {
     }
 }
 
-impl std::error::Error for PasteError {}
+impl std::error::Error for PasteError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match &self {
+            PasteError::ReqwestError(err) => Some(err),
+            _ => None,
+        }
+    }
+}
 
 impl std::fmt::Display for PasteError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
