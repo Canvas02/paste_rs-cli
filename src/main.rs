@@ -49,7 +49,20 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             let data = fs::read_to_string(file)?;
 
             let paste = Paste::new(data).await?;
-            println!("Successfully created new paste at {}", paste.get_url());
+            dbg!(&paste.id);
+            match paste.status_code {
+                Some(stat) => {
+                    if stat.as_u16() == 201 {
+                        println!("Successfully created new paste at {}", paste.get_url());
+                    } else if stat.as_u16() == 206 {
+                        println!("FILE TOO BIG");
+                        println!("Pastialy created new paste at {}", paste.get_url());
+                    } else {
+                        unreachable!()
+                    }
+                }
+                None => unreachable!(),
+            }
         }
     }
     Ok(())
@@ -57,6 +70,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 // => A main for testing
 // #[tokio::main]
-// async fn main() -> anyhow::Result<()> {
+// async fn main() -> Result<(), Box<dyn std::error::Error>> {
 //     Ok(())
 // }

@@ -6,7 +6,10 @@ const PASTE_RS_URL: &str = "https://paste.rs/";
 use crate::error::{PasteError, PasteResult};
 
 #[derive(Debug)]
-pub struct Paste(String);
+pub struct Paste {
+    pub id: String,
+    pub status_code: Option<reqwest::StatusCode>,
+}
 
 // Use get_id() and get_url() methods
 /*
@@ -29,12 +32,21 @@ impl Paste {
     /// ```
     pub fn from(val: &str) -> PasteResult<Self> {
         if is_url(val) && is_paste_rs_url(val) {
-            Ok(Paste(extract_paste_id(&val.to_string())?))
+            Ok(Paste {
+                id: extract_paste_id(&val.to_string())?,
+                status_code: None,
+            })
         } else if !is_url(val) && is_paste_rs_url(val) {
             let full_url = format!("https://{}", val);
-            Ok(Paste(extract_paste_id(&full_url.to_string())?))
+            Ok(Paste {
+                id: extract_paste_id(&full_url.to_string())?,
+                status_code: None,
+            })
         } else if val.len() == 3 {
-            Ok(Paste(val.to_string()))
+            Ok(Paste {
+                id: val.to_string(),
+                status_code: None,
+            })
         } else if is_url(val) && !is_paste_rs_url(val) {
             // bail!("Invalid URL")
             Err(PasteError::InvalidUrl)
@@ -63,11 +75,20 @@ impl Paste {
             .body(data)
             .header("Content-Type", "text/plain")
             .send()
-            .await?
-            .text()
             .await?;
 
-        Ok(Paste(res))
+        match res.error_for_status() {
+            Ok(res) => {
+                let res_stat = res.status();
+                let res_text = res.text().await?;
+                // let ref_res_text = &res.text().await?;
+                Ok(Paste {
+                    status_code: Some(res_stat),
+                    id: extract_paste_id(&res_text)?,
+                })
+            }
+            Err(e) => Err(PasteError::ReqwestError(e)),
+        }
     }
 
     /// Get a paste's content
@@ -96,8 +117,7 @@ impl Paste {
 
     /// Get the url of a Paste
     pub fn get_url(&self) -> String {
-        let Paste(id) = self;
-        format!("{}/{}", PASTE_RS_URL, id)
+        format!("{}/{}", PASTE_RS_URL, self.id)
     }
 }
 
