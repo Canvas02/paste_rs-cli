@@ -22,3 +22,4 @@ reqwest = "0.11"
 [profile.release]
 lto = true
 opt-level = 3
+strip = "debuginfo" # Requires Cargo 1.59
