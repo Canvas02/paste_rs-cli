@@ -19,6 +19,14 @@ tokio = { version = "1.16", features = ["macros", "rt-multi-thread"] }
 reqwest = "0.11"
 # anyhow = "1.0"
 
+[lib]
+name = "paste_rs"
+path = "src/lib.rs"
+
+[[bin]]
+name = "paste_rs-cli"
+path = "src/main.rs"
+
 [profile.release]
 lto = true
 opt-level = 3

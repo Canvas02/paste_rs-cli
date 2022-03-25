@@ -3,7 +3,7 @@
 
 const PASTE_RS_URL: &str = "https://paste.rs/";
 
-use crate::error::{PasteError, PasteResult};
+use core::result::Result as coreResult;
 
 #[derive(Debug)]
 pub struct Paste {
@@ -30,7 +30,7 @@ impl Paste {
     /// let paste = Paste::from("https://paste.rs/osx").unwrap();
     /// let paste = Paste::from("paste.rs/osx").unwrap();
     /// ```
-    pub fn from(val: &str) -> PasteResult<Self> {
+    pub fn from(val: &str) -> Result<Self> {
         if is_url(val) && is_paste_rs_url(val) {
             Ok(Paste {
                 id: extract_paste_id(&val.to_string())?,
@@ -49,10 +49,10 @@ impl Paste {
             })
         } else if is_url(val) && !is_paste_rs_url(val) {
             // bail!("Invalid URL")
-            Err(PasteError::InvalidUrl)
+            Err(Error::InvalidUrl)
         } else {
             // bail!("Invalid argument")
-            Err(PasteError::InvalidArguments)
+            Err(Error::InvalidArguments)
         }
     }
 
@@ -68,7 +68,7 @@ impl Paste {
     /// dbg!(res);
     /// ```
     ///
-    pub async fn new(data: String) -> PasteResult<Self> {
+    pub async fn new(data: String) -> Result<Self> {
         let client = reqwest::Client::new();
         let res = client
             .post(PASTE_RS_URL)
@@ -87,7 +87,7 @@ impl Paste {
                     id: extract_paste_id(&res_text)?,
                 })
             }
-            Err(e) => Err(PasteError::ReqwestError(e)),
+            Err(e) => Err(Error::ReqwestError(e)),
         }
     }
 
@@ -102,7 +102,7 @@ impl Paste {
     /// dbg!(paste_content);
     /// ```
     ///
-    pub async fn get(&self) -> PasteResult<String> {
+    pub async fn get(&self) -> Result<String> {
         let res = reqwest::get(self.get_url()).await?.text().await?;
         Ok(res)
     }
@@ -141,13 +141,51 @@ fn is_paste_rs_url(url: &str) -> bool {
     }
 }
 
-fn extract_paste_id(url: &String) -> Result<String, PasteError> {
+fn extract_paste_id(url: &String) -> coreResult<String, Error> {
     // let url = url.to_owned();
     // url.replace_range(0..PASTE_RS_URL.len(), "");
     if url.contains(PASTE_RS_URL) {
         Ok(url.replace(PASTE_RS_URL, ""))
     } else {
         // bail!("Url is not a Paste.rs url")
-        Err(PasteError::InvalidUrl)
+        Err(Error::InvalidUrl)
+    }
+}
+
+// Error
+// Copyright 2022 Canvas02 <Canvas02@protonmail.com>.
+// SPDX-License-Identifier: MIT
+
+pub type Result<T> = coreResult<T, Error>;
+
+#[derive(Debug)]
+pub enum Error {
+    InvalidUrl,
+    InvalidArguments,
+    ReqwestError(reqwest::Error),
+}
+
+impl std::convert::From<reqwest::Error> for Error {
+    fn from(err: reqwest::Error) -> Self {
+        Error::ReqwestError(err)
+    }
+}
+
+impl std::error::Error for Error {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match &self {
+            Error::ReqwestError(err) => Some(err),
+            _ => None,
+        }
+    }
+}
+
+impl std::fmt::Display for Error {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match &self {
+            Error::InvalidArguments => write!(f, "Invalid Arguments"),
+            Error::InvalidUrl => write!(f, "Invalid Url"),
+            Error::ReqwestError(req_err) => write!(f, "{}", req_err),
+        }
     }
 }

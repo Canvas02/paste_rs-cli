@@ -3,13 +3,9 @@
 
 #![deny(unused)]
 
-mod api;
-mod cli;
-mod error;
-
-use crate::api::Paste;
 use crate::cli::{Cli, Commands};
 use clap::Parser;
+use paste_rs::Paste;
 use std::fs;
 
 #[tokio::main]
@@ -68,8 +64,40 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-// => A main for testing
-// #[tokio::main]
-// async fn main() -> Result<(), Box<dyn std::error::Error>> {
-//     Ok(())
-// }
+// Cli
+mod cli {
+    // Copyright 2022 Canvas02 <Canvas02@protonmail.com>
+    // SPDX-License-Identifier: MIT
+
+    use clap::{AppSettings, Parser, Subcommand};
+    use std::path::PathBuf;
+
+    #[derive(Parser)]
+    #[clap(name = "paste-rs")]
+    #[clap(about, author, version)]
+    pub struct Cli {
+        #[clap(subcommand)]
+        pub command: Commands,
+    }
+
+    #[derive(Subcommand)]
+    pub enum Commands {
+        // Command to get a paste
+        #[clap(setting(AppSettings::ArgRequiredElseHelp))]
+        #[clap(about = "Get a paste")]
+        Get {
+            #[clap(short, long, parse(from_os_str))]
+            output: Option<PathBuf>,
+            #[clap(required = true)]
+            val: String,
+        },
+
+        // Command to make a paste
+        #[clap(setting(AppSettings::ArgRequiredElseHelp))]
+        #[clap(about = "Make a new paste")]
+        New {
+            #[clap(required = true)]
+            file: String,
+        },
+    }
+}
