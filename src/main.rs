@@ -3,9 +3,11 @@
 
 #![deny(unused)]
 
+mod api;
+
+use crate::api::Paste;
 use crate::cli::{Cli, Commands};
 use clap::Parser;
-use paste_rs::Paste;
 use std::fs;
 
 #[tokio::main]
@@ -37,7 +39,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     println!("");
                     println!("======================================================================================");
 
-                    std::process::exit(0);
+                    return Ok(());
                 }
             }
         }

@@ -3,8 +3,6 @@
 
 const PASTE_RS_URL: &str = "https://paste.rs/";
 
-use core::result::Result as coreResult;
-
 #[derive(Debug)]
 pub struct Paste {
     pub id: String,
@@ -30,7 +28,7 @@ impl Paste {
     /// let paste = Paste::from("https://paste.rs/osx").unwrap();
     /// let paste = Paste::from("paste.rs/osx").unwrap();
     /// ```
-    pub fn from(val: &str) -> Result<Self> {
+    pub fn from(val: &str) -> Result<Self, Error> {
         if is_url(val) && is_paste_rs_url(val) {
             Ok(Paste {
                 id: extract_paste_id(&val.to_string())?,
@@ -68,7 +66,7 @@ impl Paste {
     /// dbg!(res);
     /// ```
     ///
-    pub async fn new(data: String) -> Result<Self> {
+    pub async fn new(data: String) -> Result<Self, Error> {
         let client = reqwest::Client::new();
         let res = client
             .post(PASTE_RS_URL)
@@ -87,7 +85,7 @@ impl Paste {
                     id: extract_paste_id(&res_text)?,
                 })
             }
-            Err(e) => Err(Error::ReqwestError(e)),
+            Err(e) => Err(e.into()),
         }
     }
 
@@ -102,12 +100,17 @@ impl Paste {
     /// dbg!(paste_content);
     /// ```
     ///
-    pub async fn get(&self) -> Result<String> {
-        let res = reqwest::get(self.get_url()).await?.text().await?;
-        Ok(res)
+    pub async fn get(&self) -> Result<String, Error> {
+        let res = reqwest::get(self.get_url()).await?;
+        // .text().await?;
+
+        match res.error_for_status() {
+            Ok(res) => return Ok(res.text().await?),
+            Err(e) => return Err(e.into()),
+        }
     }
 
-    /* ! Unused code
+    /* !Unused code
     /// Get the id of a Paste
     pub fn get_id(&self) -> String {
         let Paste(id) = self;
@@ -141,7 +144,7 @@ fn is_paste_rs_url(url: &str) -> bool {
     }
 }
 
-fn extract_paste_id(url: &String) -> coreResult<String, Error> {
+fn extract_paste_id(url: &String) -> Result<String, Error> {
     // let url = url.to_owned();
     // url.replace_range(0..PASTE_RS_URL.len(), "");
     if url.contains(PASTE_RS_URL) {
@@ -156,36 +159,12 @@ fn extract_paste_id(url: &String) -> coreResult<String, Error> {
 // Copyright 2022 Canvas02 <Canvas02@protonmail.com>.
 // SPDX-License-Identifier: MIT
 
-pub type Result<T> = coreResult<T, Error>;
-
-#[derive(Debug)]
+#[derive(thiserror::Error, Debug)]
 pub enum Error {
+    #[error("Invalid Url")]
     InvalidUrl,
+    #[error("Invalid Arguments")]
     InvalidArguments,
-    ReqwestError(reqwest::Error),
-}
-
-impl std::convert::From<reqwest::Error> for Error {
-    fn from(err: reqwest::Error) -> Self {
-        Error::ReqwestError(err)
-    }
-}
-
-impl std::error::Error for Error {
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
-        match &self {
-            Error::ReqwestError(err) => Some(err),
-            _ => None,
-        }
-    }
-}
-
-impl std::fmt::Display for Error {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match &self {
-            Error::InvalidArguments => write!(f, "Invalid Arguments"),
-            Error::InvalidUrl => write!(f, "Invalid Url"),
-            Error::ReqwestError(req_err) => write!(f, "{}", req_err),
-        }
-    }
+    #[error("{0}")]
+    ReqwestError(#[from] reqwest::Error),
 }
