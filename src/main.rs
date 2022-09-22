@@ -71,10 +71,10 @@ mod cli {
     // Copyright 2022 Canvas02 <Canvas02@protonmail.com>
     // SPDX-License-Identifier: MIT
 
-    use clap::{AppSettings, Parser, Subcommand};
+    use clap::{Parser, Subcommand};
     use std::path::PathBuf;
 
-    #[derive(Parser)]
+    #[derive(Debug, Parser)]
     #[clap(name = "paste-rs")]
     #[clap(about, author, version)]
     pub struct Cli {
@@ -82,20 +82,25 @@ mod cli {
         pub command: Commands,
     }
 
-    #[derive(Subcommand)]
+    #[derive(Debug, Subcommand)]
     pub enum Commands {
         // Command to get a paste
-        #[clap(setting(AppSettings::ArgRequiredElseHelp))]
-        #[clap(about = "Get a paste")]
+        // TODO(Canvas02): migrate to 'Command::arg_required_else_help' + 'Command::is_arg_required_else_help_set'
+        // #[clap(setting(AppSettings::ArgRequiredElseHelp))]
+        // #[clap(about = "Get a paste")]
+        #[clap(arg_required_else_help = true)]
         Get {
-            #[clap(short, long, parse(from_os_str))]
+            // TODO(Canvas02): migrate from 'from_os_str' to 'vaule_parser'
+            // #[clap(short, long, parse(from_os_str))]
+            #[clap(short = 'o', value_name = "DIR", value_hint = clap::ValueHint::DirPath)]
             output: Option<PathBuf>,
             #[clap(required = true)]
             val: String,
         },
 
         // Command to make a paste
-        #[clap(setting(AppSettings::ArgRequiredElseHelp))]
+        // #[clap(setting(AppSettings::ArgRequiredElseHelp))]
+        #[clap(arg_required_else_help = true)]
         #[clap(about = "Make a new paste")]
         New {
             #[clap(required = true)]

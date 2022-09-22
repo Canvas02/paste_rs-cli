@@ -120,7 +120,7 @@ impl Paste {
 
     /// Get the url of a Paste
     pub fn get_url(&self) -> String {
-        format!("{}/{}", PASTE_RS_URL, self.id)
+        format!("{}{}", PASTE_RS_URL, self.id)
     }
 }
 
